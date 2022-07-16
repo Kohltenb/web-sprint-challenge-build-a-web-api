@@ -1,10 +1,12 @@
 const express = require('express');
+const cors = require('cors')
 const projRouter = require('./projects/projects-router');
 const actionRouter = require('./actions/actions-router');
 
 const server = express();
 server.use(express.json()); //UNDER THIS PUPPY
 
+server.use(cors())
 server.use('/api/projects', projRouter)
 server.use('/api/actions', actionRouter)
 
