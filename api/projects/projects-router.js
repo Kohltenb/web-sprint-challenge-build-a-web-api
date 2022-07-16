@@ -81,7 +81,7 @@ router.put('/:id', async (req, res, next) => {
                 message: 'The user with the specified ID does not exist',
             })
         } else {
-            if (!name || !description || completed === null ) {
+            if (!name || !description || completed === undefined ) {
                 res.status(400).json({
                     message: 'no no no no no',
                 })
