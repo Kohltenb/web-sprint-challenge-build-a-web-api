@@ -45,33 +45,57 @@ actionRouter.post('/', (req, res, next) => { //working but not passing
     }
 })
 
-actionRouter.put('/:id', (req, res, next) => {
-    const { name, description, project_id } = req.body
-    if (!name || !description || !project_id) { //i= just swaps the passing test
-        res.status(400).json({
-            message: "Please provide title and contents for the post"
-        })
-    } else {
-        Actions.get(req.params.id)
-            .then(stuff => {
-                if (!stuff) {
-                    res.status(404).json({
-                        message: 'The Actions with the specified ID does not exist'
-                    })
-                } else {
-                    return Actions.update(req.params.id, req.body)
-                }
+
+actionRouter.put('/:id', async (req, res, next) => {
+    try {
+        const { notes, description, project_id, completed } = req.body
+        const possibleId = await Actions.get(req.params.id)
+        if (!possibleId) {
+            res.status(404).json({
+                message: 'The user with the specified ID does not exist',
             })
-            .then(data => {
-                if (data) {
-                    return Actions.get(req.params.id)
-                }
-            })
-            .then(post => {
-                res.json(post)
-            }) .catch(next)
+        } else {
+            if (!notes || !description || !project_id ) {
+                res.status(400).json({
+                    message: 'no no no no no',
+                })
+            } else {
+                const updated = await Actions.update(req.params.id, req.body )
+                res.status(200).json(updated)
+            }
+        }
+    } catch (err) {
+        next(err)
     }
 })
+
+// actionRouter.put('/:id', (req, res, next) => {
+//     const { name, description, project_id } = req.body
+//     if (!name || !description || !project_id) { //i= just swaps the passing test
+//         res.status(400).json({
+//             message: "Please provide title and contents for the post"
+//         })
+//     } else {
+//         Actions.get(req.params.id)
+//             .then(stuff => {
+//                 if (!stuff) {
+//                     res.status(404).json({
+//                         message: 'The Actions with the specified ID does not exist'
+//                     })
+//                 } else {
+//                     return Actions.update(req.params.id, req.body)
+//                 }
+//             })
+//             .then(data => {
+//                 if (data) {
+//                     return Actions.get(req.params.id)
+//                 }
+//             })
+//             .then(post => {
+//                 res.json(post)
+//             }) .catch(next)
+//     }
+// })
 
 actionRouter.delete('/:id', async (req, res, next) => {
     try {

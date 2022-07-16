@@ -72,31 +72,26 @@ router.post('/', (req, res, next) => { //working but not passing
 //     })
 // })
 
-router.put('/:id', (req, res, next) => {
-    const { name, description, completed } = req.body
-    if (!name || !description || req.body === completed) { //i= just swaps the passing test
-        res.status(400).json({
-            message: "Please provide title and contents for the post"
-        })
-    } else {
-        Projects.get(req.params.id)
-            .then(stuff => {
-                if (!stuff) {
-                    res.status(404).json({
-                        message: 'The Projects with the specified ID does not exist'
-                    })
-                } else {
-                    return Projects.update(req.params.id, req.body)
-                }
+router.put('/:id', async (req, res, next) => {
+    try {
+        const { name, description, completed } = req.body
+        const possibleId = await Projects.get(req.params.id)
+        if (!possibleId) {
+            res.status(404).json({
+                message: 'The user with the specified ID does not exist',
             })
-            .then(data => {
-                if (data) {
-                    return Projects.get(req.params.id)
-                }
-            })
-            .then(post => {
-                res.json(post)
-            }) .catch(next)
+        } else {
+            if (!name || !description || completed === null ) {
+                res.status(400).json({
+                    message: 'no no no no no',
+                })
+            } else {
+                const updated = await Projects.update(req.params.id, req.body )
+                res.status(200).json(updated)
+            }
+        }
+    } catch (err) {
+        next(err)
     }
 })
 
